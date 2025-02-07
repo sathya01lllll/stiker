@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticker WhatsApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 200px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tambah Stiker ke WhatsApp</h1>
+    <input type="text" id="stickerText" placeholder="Masukkan teks untuk stiker">
+    <button onclick="generateSticker()">Buat & Unduh Stiker</button>
+    <p id="status"></p>
+    <img id="stickerPreview" alt="Preview Stiker">
+
+    <script>
+        async function generateSticker() {
+            let text = document.getElementById("stickerText").value;
+            if (!text) {
+                alert("Masukkan teks terlebih dahulu!");
+                return;
+            }
+
+            document.getElementById("status").innerText = "Membuat stiker...";
+            
+            try {
+                // Ambil gambar dari API
+                let response = await fetch(`https://indragpt.my.id/command/sticker/brat?text=${encodeURIComponent(text)}`);
+                let blob = await response.blob();
+
+                // Buat URL untuk unduhan
+                let stickerUrl = URL.createObjectURL(blob);
+
+                // Tampilkan preview
+                let imgElement = document.getElementById("stickerPreview");
+                imgElement.src = stickerUrl;
+                imgElement.style.display = "block";
+
+                // Buat tombol download otomatis
+                let link = document.createElement("a");
+                link.href = stickerUrl;
+                link.download = "sticker.webp";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                document.getElementById("status").innerText = "Stiker telah dibuat! Unduh dan tambahkan ke WhatsApp.";
+                alert("Stiker telah diunduh! Tambahkan ke WhatsApp sebagai stiker.");
+            } catch (error) {
+                console.error("Gagal membuat stiker:", error);
+                document.getElementById("status").innerText = "Gagal membuat stiker!";
+                alert("Terjadi kesalahan saat membuat stiker.");
+            }
+        }
+    </script>
+
+</body>
+</html>
