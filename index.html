@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker WhatsApp</title>
+    <title>Sticker WhatsApp - Sathya Store</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,25 +14,75 @@
         h1 {
             color: #333;
         }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
         input, button {
             padding: 10px;
             margin: 10px;
             font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
         }
         img {
             margin-top: 20px;
             max-width: 200px;
             display: none;
         }
+        #loading {
+            display: none;
+            font-size: 18px;
+            color: #ff6f00;
+            margin-top: 10px;
+        }
+        /* Animasi loading */
+        .loader {
+            display: none;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .logo {
+            width: 100px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Tambah Stiker ke WhatsApp</h1>
-    <input type="text" id="stickerText" placeholder="Masukkan teks untuk stiker">
-    <button onclick="generateSticker()">Buat & Unduh Stiker</button>
-    <p id="status"></p>
-    <img id="stickerPreview" alt="Preview Stiker">
+    <!-- Logo -->
+    <img src="https://telegra.ph/file/a80b7f30770ea1f67b2b5.jpg" class="logo" alt="Sathya Store Logo">
+
+    <div class="container">
+        <h1>Tambah Stiker ke WhatsApp</h1>
+        <input type="text" id="stickerText" placeholder="Masukkan teks untuk stiker">
+        <button onclick="generateSticker()">Buat & Unduh Stiker</button>
+        <p id="loading">Sedang memproses...</p>
+        <div class="loader"></div>
+        <p id="status"></p>
+        <img id="stickerPreview" alt="Preview Stiker">
+    </div>
 
     <script>
         async function generateSticker() {
@@ -42,8 +92,10 @@
                 return;
             }
 
-            document.getElementById("status").innerText = "Membuat stiker...";
-            
+            document.getElementById("loading").style.display = "block";
+            document.querySelector(".loader").style.display = "block";
+            document.getElementById("status").innerText = "";
+
             try {
                 // Ambil gambar dari API
                 let response = await fetch(`https://indragpt.my.id/command/sticker/brat?text=${encodeURIComponent(text)}`);
@@ -57,6 +109,10 @@
                 imgElement.src = stickerUrl;
                 imgElement.style.display = "block";
 
+                // Hentikan animasi loading
+                document.getElementById("loading").style.display = "none";
+                document.querySelector(".loader").style.display = "none";
+
                 // Buat tombol download otomatis
                 let link = document.createElement("a");
                 link.href = stickerUrl;
@@ -65,11 +121,12 @@
                 link.click();
                 document.body.removeChild(link);
 
-                document.getElementById("status").innerText = "Stiker telah dibuat! Unduh dan tambahkan ke WhatsApp.";
-                alert("Stiker telah diunduh! Tambahkan ke WhatsApp sebagai stiker.");
+                document.getElementById("status").innerText = "✅ Stiker telah dibuat! Unduh dan tambahkan ke WhatsApp.";
             } catch (error) {
                 console.error("Gagal membuat stiker:", error);
-                document.getElementById("status").innerText = "Gagal membuat stiker!";
+                document.getElementById("loading").style.display = "none";
+                document.querySelector(".loader").style.display = "none";
+                document.getElementById("status").innerText = "❌ Gagal membuat stiker!";
                 alert("Terjadi kesalahan saat membuat stiker.");
             }
         }
